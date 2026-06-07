@@ -1,3 +1,4 @@
+
 # ALCOSONDE
 
 Sonde immersible de mesure du titre alcoométrique par voie capacitive, pilotée par un microcontrôleur STM32.
@@ -5,7 +6,7 @@ Sonde immersible de mesure du titre alcoométrique par voie capacitive, pilotée
 ALCOSONDE mesure le pourcentage d'alcool d'un liquide (de 0 à 40 %vol) en exploitant le contraste de permittivité diélectrique entre l'eau et l'éthanol. L'appareil affiche le résultat par plages et signale, par un retour visuel et sonore, l'instant où le liquide atteint la plage visée. Il est pensé pour suivre l'évolution d'une fermentation maison (bière, vin, cidre, hydromel) jusqu'au degré souhaité.
 
 Projet réalisé dans le cadre du module Projet Prototypage, ISMIN 1re année, École nationale supérieure des Mines de Saint-Étienne (2025-2026).
-
+<img width="3840" height="5120" alt="WhatsApp Image 2026-06-07 at 17 10 56 - Copie" src="https://github.com/user-attachments/assets/73741c32-c920-4771-b0d4-118283b440b3" />
 ## Sommaire
 
 - [Principe](#principe)
