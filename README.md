@@ -65,6 +65,11 @@ La sonde forme donc un condensateur dont la capacité varie avec le taux d'alcoo
 | +3V3 | Alimentation | Écran |
 | GND  | Masse        | Masse commune |
 
+
+Voici le schéma de branchement global d’ALCOSONDE :
+
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/b5cf44ab-d8b5-44a5-bd23-cddb014fbc5f" />
+
 ## Firmware
 
 Développé sous STM32CubeIDE avec les bibliothèques HAL. Le programme s'organise en deux parties :
