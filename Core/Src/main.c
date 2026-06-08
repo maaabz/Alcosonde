@@ -26,11 +26,12 @@
 /* USER CODE BEGIN PD */
 #define F_CLK     32000000.0f  // Horloge du timer TIM2 [Hz]
 #define K         4.55e-7f     // Constante du conditionneur : f = K / C  [F.Hz]
-#define CP        8.55f         // Capacite parasite du PCB [pF]
-#define PENTE     0.135f      // Pente COMSOL : C_sonde[pF] = PENTE * eps_r
+#define CP        8.50f         // Offset de calibration air/eau (capacite a eps_r=1) [pF]
+#define PENTE     0.315f        // Pente de calibration air/eau [pF par unite de eps_r]
 #define EPS_EAU   80.1f        // Permittivite a 0%vol (eau pure, Akerlof)
-#define PENTE_ALC 0.76f        // eps_r diminue de 0.76 par %vol (Akerlof, 0-40%)
+#define PENTE_ALC 1.54f        // calibration alcool : 0%=eau (eps_r 80,1), 33%=echantillon (eps_r 29,3)
 #define NB_PLAGES 8            // Nombre de plages d'alcool selectionnables
+#define N_MOY     16           // Nombre de mesures moyennees (moyenne glissante)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,6 +49,11 @@ volatile uint32_t ic_val1 = 0;        // capture precedente
 volatile uint32_t ic_val2 = 0;        // capture courante
 volatile uint32_t periode_ticks = 0;  // periode mesuree, en ticks d'horloge
 char buffer[80];                      // chaine pour le port serie
+
+// --- Moyenne glissante sur la periode (reduction du bruit) ---
+uint32_t buf_periode[N_MOY] = {0};    // tampon circulaire des dernieres periodes
+uint8_t  idx_moy = 0;                 // index courant dans le tampon
+uint8_t  buf_rempli = 0;              // passe a 1 quand le tampon est plein
 
 // --- Plages d'alcool selectionnables ---
 uint8_t plage = 0;                                              // plage cible actuelle (0..NB_PLAGES-1)
@@ -174,9 +180,19 @@ int main(void)
 
       // ===== 3. MESURE -> titre alcoometrique =====
       if (periode_ticks > 0)
-      {
-        float f = F_CLK / (float)periode_ticks;   // frequence [Hz]
-        float C_tot = (K / f) * 1e12f;            // capacite totale [pF]
+            {
+              // --- moyenne glissante de la periode pour reduire le bruit ---
+              buf_periode[idx_moy] = periode_ticks;
+              idx_moy = (idx_moy + 1) % N_MOY;
+              if (idx_moy == 0) buf_rempli = 1;
+
+              uint8_t n = buf_rempli ? N_MOY : idx_moy;   // nombre d'echantillons valides
+              uint32_t somme = 0;
+              for (uint8_t i = 0; i < n; i++) somme += buf_periode[i];
+              float periode_moy = (float)somme / (float)n;
+
+              float f = F_CLK / periode_moy;            // frequence [Hz] (moyennee)
+              float C_tot = (K / f) * 1e12f;            // capacite totale [pF]
         float C_sonde = C_tot - CP;               // capacite sonde seule [pF]
         float eps_r = C_sonde / PENTE;            // permittivite relative
         float titre = (EPS_EAU - eps_r) / PENTE_ALC;   // titre [%vol] (loi Akerlof)
