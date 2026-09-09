@@ -6,7 +6,10 @@ Sonde immersible de mesure du titre alcoométrique par voie capacitive, pilotée
 ALCOSONDE mesure le pourcentage d'alcool d'un liquide (de 0 à 40 %vol) en exploitant le contraste de permittivité diélectrique entre l'eau et l'éthanol. L'appareil affiche le résultat par plages et signale, par un retour visuel et sonore, l'instant où le liquide atteint la plage visée. Il est pensé pour suivre l'évolution d'une fermentation maison (bière, vin, cidre, hydromel) jusqu'au degré souhaité.
 
 Projet réalisé dans le cadre du module Projet Prototypage à École nationale supérieure des Mines de Saint-Étienne cursus ISMIN (2025-2026).
-<img width="3840" height="5120" alt="WhatsApp Image 2026-06-07 at 17 10 56 - Copie" src="https://github.com/user-attachments/assets/73741c32-c920-4771-b0d4-118283b440b3" />
+<img width="3840" height="5120" alt="WhatsApp Image 2026-06-07 at 17 10 56 - Copie" src="https://github.com/user-attachments/assets/73741c32-c920-4771-b0d4-118283b440b3" />  <img width="1156" height="646" alt="image" src="https://github.com/user-attachments/assets/319f604b-a70f-4986-a120-c37041b9cffa" />  <img width="752" height="1012" alt="image" src="https://github.com/user-attachments/assets/5c2d8980-7843-4a4d-ae12-c3f3ec97bab1" /> <img width="1180" height="938" alt="image" src="https://github.com/user-attachments/assets/2965ab1d-c40a-49d6-9342-7cc8081271d5" />
+
+
+
 ## Sommaire
 
 - [Principe](#principe)
