@@ -38,7 +38,6 @@ Projet du module *Projet Prototypage*, cursus ISMIN 1<sup>re</sup> année, Écol
 | Résolution du timer | ≈ 0,14 %vol par tick (TIM2 à 32 MHz) |
 | Validation | 2/2 essais dans la bonne plage (0 %vol et ≈ 17 %vol) |
 
-📄 [Rapport complet (28 pages, PDF)](docs/alcosonde-report.pdf) — méthodologie, simulations, relevés et schémas détaillés.
 
 ### Sommaire
 
