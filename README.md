@@ -363,7 +363,6 @@ Built for the *Prototyping Project* module, first-year ISMIN program, École nat
 | Timer resolution | ≈ 0.14 %vol per tick (TIM2 at 32 MHz) |
 | Validation | 2/2 trials landed in the correct band (0 %vol and ≈ 17 %vol) |
 
-📄 [Full report (28 pages, PDF, in French)](docs/alcosonde-report.pdf) — methodology, simulations, measurements and detailed schematics.
 
 ### Contents
 
