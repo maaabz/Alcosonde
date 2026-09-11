@@ -1,156 +1,338 @@
-
 # ALCOSONDE
 
-Sonde immersible de mesure du titre alcoométrique par voie capacitive, pilotée par un microcontrôleur STM32.
+**An immersible capacitive probe for measuring alcohol by volume, driven by an STM32.**
 
-ALCOSONDE mesure le pourcentage d'alcool d'un liquide (de 0 à 40 %vol) en exploitant le contraste de permittivité diélectrique entre l'eau et l'éthanol. L'appareil affiche le résultat par plages et signale, par un retour visuel et sonore, l'instant où le liquide atteint la plage visée. Il est pensé pour suivre l'évolution d'une fermentation maison (bière, vin, cidre, hydromel) jusqu'au degré souhaité.
+[🇫🇷 Français](README.md) · 🇬🇧 English
 
-Projet réalisé dans le cadre du module Projet Prototypage à École nationale supérieure des Mines de Saint-Étienne cursus ISMIN (2025-2026).
-<img width="3840" height="5120" alt="WhatsApp Image 2026-06-07 at 17 10 56 - Copie" src="https://github.com/user-attachments/assets/73741c32-c920-4771-b0d4-118283b440b3" />  <img width="1156" height="646" alt="image" src="https://github.com/user-attachments/assets/319f604b-a70f-4986-a120-c37041b9cffa" />  <img width="752" height="1012" alt="image" src="https://github.com/user-attachments/assets/5c2d8980-7843-4a4d-ae12-c3f3ec97bab1" /> <img width="1180" height="938" alt="image" src="https://github.com/user-attachments/assets/2965ab1d-c40a-49d6-9342-7cc8081271d5" />
+![MCU](https://img.shields.io/badge/MCU-STM32%20F301K8-03234b)
+![Firmware](https://img.shields.io/badge/Firmware-C%20%2F%20HAL-00599c)
+![Simulation](https://img.shields.io/badge/Simulation-COMSOL%206.2-red)
+![PCB](https://img.shields.io/badge/PCB-KiCad-314cb0)
+![Status](https://img.shields.io/badge/prototype-working-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
+ALCOSONDE measures the alcohol content of a liquid (0 to 40 %vol) by exploiting the dielectric permittivity contrast between water (εr ≈ 80) and ethanol (εr ≈ 25). Unlike hydrometry, it stays submerged and tracks the liquid continuously, which makes it suited to following a home fermentation (beer, wine, cider, mead) until the target strength is reached.
 
+Built for the *Prototyping Project* module, first-year ISMIN program, École nationale supérieure des Mines de Saint-Étienne (2025–2026). The full chain was designed end to end: finite-element validation of the physics, analog front-end design, probe fabrication, embedded firmware, calibration and experimental validation.
 
-## Sommaire
+<img width="420" alt="ALCOSONDE prototype in operation" src="https://github.com/user-attachments/assets/73741c32-c920-4771-b0d4-118283b440b3" />
 
-- [Principe](#principe)
-- [Fonctionnalités](#fonctionnalités)
-- [Architecture matérielle](#architecture-matérielle)
-- [Brochage](#brochage)
-- [Firmware](#firmware)
-- [Compilation et programmation](#compilation-et-programmation)
-- [Calibration](#calibration)
-- [Utilisation](#utilisation)
-- [Structure du dépôt](#structure-du-dépôt)
-- [Matériel](#matériel)
-- [Limites connues](#limites-connues)
-- [Améliorations possibles](#améliorations-possibles)
-- [Auteurs](#auteurs)
-- [Licence](#licence)
-- [Avertissement](#avertissement)
+---
 
-## Principe
+## Results at a glance
 
-La capacité d'un condensateur plan vaut `C = ε0 · εr · S / d`. En gardant la géométrie fixe (deux plaques de 20×20 mm espacées de 4 mm), la capacité ne dépend plus que de la permittivité `εr` du liquide placé entre les plaques. Or l'eau (`εr ≈ 80`) et l'éthanol (`εr ≈ 25`) ont des permittivités très différentes : un mélange d'eau et d'éthanol a une permittivité intermédiaire, directement liée à son titre alcoométrique.
+| Quantity | Measured value |
+|---|---|
+| Measurement range | 0 to 40 %vol, in 5 %vol bands |
+| Probe capacitance | 15.3 to 19.4 pF over the useful range |
+| Front-end frequency | 23.5 to 29.8 kHz |
+| Sensitivity | ≈ 158 Hz/%vol, i.e. ≈ 0.10 pF/%vol |
+| Calibration law | C = 0.135·εr + 8.55 (pF), two-point air/water |
+| Simulated C(εr) linearity | R² > 0.9999 over 12 points, εr ∈ [25, 78] |
+| Timer resolution | ≈ 0.14 %vol per tick (TIM2 at 32 MHz) |
+| Validation | 2/2 trials landed in the correct band (0 %vol and ≈ 17 %vol) |
 
-La sonde forme donc un condensateur dont la capacité varie avec le taux d'alcool. Un circuit conditionneur (oscillateur à relaxation) convertit cette capacité en une fréquence selon `f = K / C`, que le STM32 mesure par Input Capture puis convertit en titre alcoométrique.
+📄 [Full report (28 pages, PDF, in French)](docs/ProjetProto-Abou_Zeid-Chatelain.pdf) — methodology, simulations, measurements and detailed schematics.
 
-## Fonctionnalités
+---
 
-- Mesure du titre alcoométrique de 0 à 40 %vol.
-- Affichage par plages de 5 %vol sur écran couleur.
-- Sélection de la plage cible par un bouton de consigne.
-- Retour visuel (écran vert) et sonore (buzzer) quand le titre entre dans la plage visée.
-- Lecture en continu, adaptée au suivi d'une fermentation dans le temps.
+## Contents
 
-## Architecture matérielle
+- [Physical principle](#physical-principle)
+- [Measurement chain](#measurement-chain)
+- [COMSOL validation](#comsol-validation)
+- [Analog front-end](#analog-front-end)
+- [Capacitive probe](#capacitive-probe)
+- [STM32 and firmware](#stm32-and-firmware)
+- [Calibration and validation](#calibration-and-validation)
+- [Simulation vs. measurement: the sensitivity gap](#simulation-vs-measurement-the-sensitivity-gap)
+- [Build and flash](#build-and-flash)
+- [Repository layout](#repository-layout)
+- [Bill of materials](#bill-of-materials)
+- [Known limitations](#known-limitations)
+- [Possible improvements](#possible-improvements)
+- [Authors and supervision](#authors-and-supervision)
+- [References](#references)
+- [License and disclaimer](#license-and-disclaimer)
 
-- **Sonde capacitive** : deux plaques de cuivre 20×20 mm espacées de 4 mm, gravées sur FR4, isolées par un film de silicone fluide transparent, maintenues par un support imprimé en 3D.
-- **Conditionneur** : oscillateur à relaxation autour d'un AOP quadruple ADA4622-4, au format shield pour s'enficher sur la carte. Convertit la capacité en fréquence (`f = K / C`).
-- **Microcontrôleur** : carte STM32 Nucleo F301K8, timer TIM2 à 32 MHz en Input Capture.
-- **Périphériques** : écran TFT ILI9341 (240×320, SPI), bouton de consigne, buzzer piézo actif.
-- **Alimentation** : port USB de la carte, qui sert aussi à la programmation et au debug.
+---
 
-## Brochage
+## Physical principle
 
-| Broche | Fonction MCU | Composant |
-|--------|--------------|-----------|
-| PA0  | TIM2_CH1    | Sortie du conditionneur (Input Capture) |
-| PA2  | USART2_TX   | Liaison série VCP (ST-LINK) |
-| PA15 | USART2_RX   | Liaison série VCP (ST-LINK) |
-| PA8  | GPIO sortie | Buzzer |
-| PB0  | GPIO entrée | Bouton de consigne (tirage interne) |
-| PB1  | GPIO sortie | Écran : CS |
-| PB3  | SPI3_SCK    | Écran : horloge SCK |
-| PB5  | SPI3_MOSI   | Écran : données MOSI |
-| PB6  | GPIO sortie | Écran : RST |
-| PB7  | GPIO sortie | Écran : DC |
-| +5V  | Alimentation | Conditionneur |
-| +3V3 | Alimentation | Écran |
-| GND  | Masse        | Masse commune |
+The capacitance of a parallel-plate capacitor is `C = ε0·εr·S/d`. With the geometry fixed (two 20 × 20 mm plates, 4 mm apart), capacitance depends only on the permittivity `εr` of the liquid between the plates.
 
+Water and ethanol sit far apart in permittivity, and a mixture of the two takes an intermediate value that is monotonic in alcohol content. Åkerlöf's values at 20 °C [1]:
 
-Voici le schéma de branchement global d’ALCOSONDE :
+| ABV (%vol) | 0 | 10 | 20 | 30 | 40 | 60 | 80 | 100 |
+|---|---|---|---|---|---|---|---|---|
+| εr | 80.1 | 72.8 | 65.0 | 57.1 | 49.7 | 37.0 | 27.3 | 25.1 |
 
-<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/b5cf44ab-d8b5-44a5-bd23-cddb014fbc5f" />
+Monotonicity guarantees the measurement is invertible. Across the target range εr spans 30 units, and that span is the entire signal budget the rest of the chain has to work with.
 
-## Firmware
+## Measurement chain
 
-Développé sous STM32CubeIDE avec les bibliothèques HAL. Le programme s'organise en deux parties :
+```mermaid
+graph LR
+    LIQ["Liquid<br/>εr"] --> PROBE["Capacitive probe<br/>2 Cu plates 20×20 mm<br/>4 mm apart"]
+    PROBE -- "C ≈ 15–19 pF" --> FE["Front-end<br/>relaxation oscillator<br/>ADA4622-4 · f = K/C"]
+    FE -- "f ≈ 23–30 kHz" --> MCU["STM32 F301K8<br/>TIM2 input capture<br/>32 MHz"]
+    MCU --> TFT["ILI9341 TFT<br/>240×320, SPI"]
+    MCU --> BTN["Target-band button"]
+    MCU --> BUZ["Piezo buzzer"]
+```
 
-- une routine d'interruption (`HAL_TIM_IC_CaptureCallback`) qui mesure la période du signal à chaque front montant sur PA0 ;
-- une boucle principale qui lit le bouton, calcule le titre à partir de la période, met à jour l'écran et déclenche le buzzer.
+Converting capacitance to frequency rather than measuring an amplitude was a deliberate choice: frequency depends only on the passive components and the sensed capacitance, which makes the chain immune to gain and supply drift. It also yields a logic-level signal a GPIO can read directly, with no ADC in the path.
 
-Chaîne de traitement : période → fréquence (`f = F_CLK / période`) → capacité (`C = K / f − Cp`) → permittivité (`εr = C / pente`) → titre (loi d'Akerlöf linéarisée) → comparaison à la plage de consigne.
+## COMSOL validation
 
-## Compilation et programmation
+Before buying any hardware, the concept was validated quantitatively in **COMSOL Multiphysics 6.2** (AC/DC module, stationary electrostatics) to answer two questions: does the capacitance land in a range the front-end can work with, and is `C(εr)` linear enough for a simple calibration?
 
-1. Installer STM32CubeIDE.
-2. Importer le projet du dossier `firmware/`.
-3. Compiler (Build).
-4. Brancher la carte en USB et flasher (Run) via le ST-LINK intégré.
-5. Ouvrir un terminal série à 115200 bauds pour suivre les mesures.
+**Method.** 2D Cartesian geometry (the probe has approximate translational symmetry along its depth), a 300 mm tank — fifteen times the plate dimension — so that the walls contribute under 1 % of the field. Triangular mesh with local refinement to `d/10 = 400 µm` between the plates. Parametric sweep over 12 values of `εr` from 25 to 78. Capacitance is extracted through `es.C11` (Maxwell capacitance matrix), defined from the electrostatic energy as `C = 2·Wel/V0²`. COMSOL returns capacitance per unit depth, so the result is scaled by the real 20 mm depth.
 
-## Calibration
+**Results.**
 
-La sonde se calibre en deux points, à partir de deux milieux de permittivité connue :
+| εr | Simulated C (pF) | Ideal parallel plate (pF) | Deviation (%) |
+|---|---|---|---|
+| 25 | 28.8 | 22.1 | 30.1 |
+| 40 | 46.1 | 35.4 | 30.1 |
+| 55 | 63.4 | 48.7 | 30.1 |
+| 70 | 80.6 | 62.0 | 30.1 |
+| 78 | 89.9 | 69.1 | 30.1 |
 
-1. À l'air (`εr ≈ 1`), plaques sèches : relever la fréquence.
-2. Dans l'eau distillée (`εr ≈ 80,1`), plaques immergées sans bulles : relever la fréquence.
+Regression over the twelve points gives `C(εr) = 1.152 pF × εr`, with **R² > 0.9999**.
 
-À partir de ces deux fréquences, on calcule les coefficients `CP` (offset) et `PENTE`, à mettre à jour dans les `#define` du `main.c`. La constante `K` reste à sa valeur théorique. Il faut recalibrer après tout changement mécanique de la sonde (collage des électrodes, par exemple).
+The most instructive result is that **the deviation from the ideal parallel-plate formula is constant at 30.1 %** across the whole sweep. Fringing fields, which the ideal formula ignores and the simulation captures, therefore act as a pure scaling by ≈ 1.30 and introduce no non-linearity whatsoever. The factor is large because the aspect ratio `L/d = 5` is low, so the edges carry proportionally more weight. The practical consequence: a two-point calibration absorbs the effect entirely, and no higher-order correction is needed.
 
-## Utilisation
+Cross-referencing Åkerlöf's data, the simulation predicts 92.3 pF at 0 %vol and 57.3 pF at 40 %vol, i.e. 0.88 pF/%vol, and frequencies from 4.9 to 7.9 kHz. Comfortably within input-capture territory, so feasibility was confirmed.
 
-1. Brancher la carte en USB.
-2. Plonger la sonde dans le liquide, plaques entièrement immergées et sans bulles.
-3. Appuyer sur le bouton pour choisir la plage de titre visée (les plages défilent de façon cyclique).
-4. Lire le titre sur l'écran. Quand il entre dans la plage choisie, l'écran passe au vert et le buzzer émet un bip.
+## Analog front-end
 
-## Structure du dépôt
+The front-end converts capacitance to frequency with a **relaxation oscillator** built around an **ADA4622-4** quad op-amp [2], in three stages:
+
+1. **Mid-supply reference** — a symmetric 2 × 10 kΩ divider buffered by a unity-gain follower, setting the virtual ground for single-supply 5 V operation. Measured at 2.51 V against 2.5 V nominal.
+2. **Integrator** — charges the probe capacitance at constant current, producing a ramp whose slope depends on `C`.
+3. **Hysteresis comparator** — flips at each threshold crossing, reversing the ramp. The result is a triangle wave across the capacitance and a square wave at the output, sharing the same period.
+
+The oscillation frequency follows:
+
+```
+f = 1 / (2·R6·C·ln(VH/VC))     with R6 = 1 MΩ
+```
+
+For a threshold ratio of 3 the logarithmic term is ln(3), giving a theoretical characteristic constant `K = 1/(2·R6·ln3) ≈ 4.55 × 10⁻⁷ F·Hz`.
+
+### Characterizing the board on its own
+
+The front-end was characterized before the probe even existed, at 5 V and ≈ 20 °C, in two configurations:
+
+| Configuration | Added capacitance | Measured frequency |
+|---|---|---|
+| Unloaded (parasitics only) | 0 pF | 111 kHz |
+| Reference ceramic cap (5 %) | 10 pF | 45 kHz |
+
+Since `f·C` is constant, setting `f₁·Cp = f₂·(Cp + Cref)` yields the board's parasitic capacitance directly:
+
+```
+Cp = f₂·Cref / (f₁ − f₂) = 45 × 10 / (111 − 45) ≈ 6.8 pF
+K_exp = f·C = 111 kHz × 6.8 pF ≈ 7.5 × 10⁻⁷ F·Hz
+```
+
+The 65 % gap between `K_exp` and `K_th` comes mainly from the actual hysteresis threshold ratio, set by R7/R8, departing from the assumed value of 3 — a ratio nearer 2 accounts for the observation on its own. Op-amp non-idealities (offset voltage, bias currents, comparator propagation delay) contribute the remainder. The firmware keeps `K_th` and lets the probe calibration absorb the discrepancy into its slope and offset.
+
+The board is laid out in **KiCad** as an Arduino Nano shield — a pinout the Nucleo F301K8 shares — with a continuous ground plane to keep trace-to-trace parasitics down.
+
+## Capacitive probe
+
+**Geometry.** Two 20 × 20 mm square copper plates, 4 mm apart. The dimensions came out of a three-way trade-off: absolute capacitance the front-end can resolve, a footprint that fits a glass or a bottle, and a gap wide enough to avoid capillary effects and trapped bubbles.
+
+**Fabrication.** Plates etched on 1 oz/ft² (35 µm) copper-clad FR4 on an LPKF mill at the school's ID-Fab workshop. The holder was modeled in Fusion 360 and 3D-printed in a material rated for prolonged humidity exposure. It serves three purposes: two parallel slots 6 mm apart hold the electrodes (each plate being 1 mm thick, which yields the 4 mm working gap), a central through-opening lets liquid circulate between the plates, and a hollow handle routes the cables.
+
+**Insulation: the critical detail.** Real liquids always carry dissolved ions — calcium, magnesium and chlorine in tap water; sugars and organic acids in a fermenting beverage. Without insulation those ions drift under the field and create a parasitic ionic current that destroys the capacitive measurement. Both faces of the plates are therefore coated in **clear fluid silicone**, which blocks conduction while behaving as a simple series capacitance, preserving the dependence on `εr`. That choice carries a cost, quantified below.
+
+The two plates are not electrically symmetric: one goes to the front-end's `SENSOR` node, the other to ground. Mark the cables so they don't get swapped during reassembly.
+
+## STM32 and firmware
+
+**STM32 Nucleo F301K8** board [4], TIM2 clocked at 32 MHz in input-capture mode. Power, programming (on-board ST-LINK) and serial debug (VCP, 115200 baud) all go through the same USB port.
+
+### Pinout
+
+| Pin | MCU function | Component |
+|---|---|---|
+| PA0 | TIM2_CH1 | Front-end output (input capture) |
+| PA2 | USART2_TX | VCP serial link (ST-LINK) |
+| PA15 | USART2_RX | VCP serial link (ST-LINK) |
+| PA8 | GPIO output | Active piezo buzzer |
+| PB0 | GPIO input | Target-band button (internal pull-up) |
+| PB1 | GPIO output | TFT — CS |
+| PB3 | SPI3_SCK | TFT — clock |
+| PB5 | SPI3_MOSI | TFT — data |
+| PB6 | GPIO output | TFT — RST |
+| PB7 | GPIO output | TFT — DC |
+| +5V / +3V3 / GND | Power | Front-end / display / common ground |
+
+<img width="700" alt="Overall wiring diagram" src="https://github.com/user-attachments/assets/b5cf44ab-d8b5-44a5-bd23-cddb014fbc5f" />
+
+### Architecture
+
+Developed in STM32CubeIDE on the HAL libraries. Two execution paths:
+
+- An **interrupt service routine**, `HAL_TIM_IC_CaptureCallback`, fired on every rising edge on PA0, which does nothing but measure the period. The heavy work is deliberately kept out of the ISR.
+- A **main loop** running on a 120 ms tick, which polls the button, converts the period into an ABV figure, refreshes the display and drives the buzzer.
+
+```c
+volatile uint32_t ic_val1 = 0;          // previous capture
+volatile uint32_t ic_val2 = 0;          // current capture
+volatile uint32_t periode_ticks = 0;    // measured period, in timer ticks
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM2)
+    {
+        ic_val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+        periode_ticks = ic_val2 - ic_val1;   // unsigned wraparound handles 32-bit overflow
+        ic_val1 = ic_val2;
+    }
+}
+```
+
+Unsigned subtraction handles the 32-bit counter rollover naturally, with no explicit test.
+
+### Processing pipeline
+
+| Step | Relation | Constant |
+|---|---|---|
+| 1. Period → frequency | `f = F_CLK / periode_ticks` | `F_CLK = 32 MHz` |
+| 2. Frequency → capacitance | `C = K / f` | `K = 4.55 × 10⁻⁷ F·Hz` |
+| 3. Capacitance → permittivity | `εr = (C − CP) / PENTE` | from calibration |
+| 4. Permittivity → ABV | Åkerlöf, linearized over 0–40 %vol | — |
+| 5. ABV → display | compared against the target band | 5 %vol steps |
+
+The button cycles through target bands, with a 200 ms software debounce. The screen turns green and the buzzer chirps once the reading enters the selected band. Static screen furniture is drawn once and only changing values are rewritten, which avoids flicker.
+
+## Calibration and validation
+
+Calibration uses two media of known permittivity, air and distilled water:
+
+| Medium | εr | Measured frequency | Derived capacitance |
+|---|---|---|---|
+| Air (dry plates) | ≈ 1 | 52,350 Hz | 8.69 pF |
+| Distilled water (submerged, bubble-free) | ≈ 80.1 | 23,480 Hz | 19.38 pF |
+
+Which gives the line `C = a·εr + Cp`:
+
+```
+a  = (19.38 − 8.69) / (80.1 − 1) ≈ 0.135 pF per unit of εr     → #define PENTE
+Cp = 8.69 − 0.135 × 1            ≈ 8.55 pF                      → #define CP
+```
+
+**Validation.** The goal is not ABV to two decimals but correctly reporting the band. Two trials:
+
+| Liquid | Actual ABV | Target band | Outcome |
+|---|---|---|---|
+| Distilled water | 0 %vol | 0–5 %vol | ✅ green screen + chirp |
+| Ethanol/water solution | ≈ 17 %vol | 15–20 %vol | ✅ green screen + chirp |
+
+In both cases the device placed the liquid in the right band. This still needs extending to commercial beverages of certified strength (wine, diluted spirits) to cover a wider range.
+
+## Simulation vs. measurement: the sensitivity gap
+
+This is the most honest result of the project, and the first thing anyone picking up the probe should read.
+
+| | Slope of C(εr) | Sensitivity |
+|---|---|---|
+| COMSOL simulation | 1.152 pF per unit of εr | 0.88 pF/%vol |
+| Measured after assembly | 0.135 pF per unit of εr | ≈ 0.10 pF/%vol |
+| **Ratio** | **≈ 8.5×** | |
+
+Real sensitivity is therefore close to nine times lower than predicted. The explanation we settled on is the **silicone film on the electrodes**: it forms a capacitance in series with the sensing capacitance, and a series capacitance smaller than its neighbour dominates the result. The coating preserves the dependence on `εr` but heavily compresses its amplitude. The simulation, meanwhile, modeled bare electrodes.
+
+Two direct consequences:
+
+- The real frequency band sits around **23.5 to 29.8 kHz** for 0 to 40 %vol, not the 4.9 to 7.9 kHz predicted.
+- With TIM2 at 32 MHz, one quantization tick corresponds to ≈ **0.14 %vol**, about 36 ticks per 5 %vol band. Measurement resolution is therefore not the bottleneck: **noise and drift are what force the banded display**, not the timer.
+
+The design lesson is that an electrostatic model of bare electrodes is not sufficient to size a probe that will be coated. A next iteration should either include the coating in the simulation or thin it down to recover sensitivity.
+
+## Build and flash
+
+```bash
+git clone https://github.com/maaabz/Alcosonde.git
+```
+
+1. Install STM32CubeIDE.
+2. `File > Import > Existing Projects into Workspace`, pointing at `firmware/`.
+3. Set the `CP` and `PENTE` constants in `main.c` from your own calibration (see above).
+4. **Build**, connect the board over USB and **Run** to flash through the on-board ST-LINK.
+5. Open a serial terminal at **115200 baud** to watch the raw readings.
+
+> **Recalibrate after any mechanical change** to the probe: re-gluing the electrodes, reapplying silicone, replacing a cable. Geometry and coating set the slope, and both move.
+
+## Repository layout
 
 ```
 alcosonde/
-├── firmware/             # Projet STM32CubeIDE (main.c, configuration CubeMX)
+├── firmware/             # STM32CubeIDE project (main.c, CubeMX configuration)
 ├── hardware/
-│   ├── conditionneur/    # Fichiers KiCad du PCB
-│   └── sonde/            # Modèles 3D (Fusion 360) du support et du boîtier
-├── simulation/           # Modèle COMSOL
-├── docs/                 # Rapport et images
+│   ├── conditionneur/    # KiCad schematic and layout for the front-end
+│   └── sonde/            # Fusion 360 models of the probe holder and enclosure
+├── simulation/           # COMSOL 6.2 model and sweep results
+├── docs/                 # PDF report and figures
 └── README.md
 ```
 
-(à adapter à ton organisation réelle)
+## Bill of materials
 
-## Matériel
+| Item | Part | Role |
+|---|---|---|
+| Microcontroller | STM32 Nucleo F301K8 | Acquisition and processing |
+| Quad op-amp | ADA4622-4 | Relaxation oscillator |
+| Display | ILI9341 TFT, 240 × 320, SPI | User readout |
+| Probe | 1 oz/ft² (35 µm) copper-clad FR4 | 20 × 20 mm plates |
+| Insulation | Clear fluid silicone | Blocks ionic conduction |
+| Buzzer | 5 V active piezo | Audible alert |
+| Button | Momentary push-button | Target-band selection |
+| Mechanical | 3D printing filament | Probe holder and enclosure |
 
-- Carte STM32 Nucleo F301K8
-- AOP quadruple ADA4622-4 et composants passifs du conditionneur
-- Écran TFT ILI9341 240×320 (SPI)
-- Bouton poussoir
-- Buzzer piézo actif 5 V
-- Plaque FR4 cuivrée pour la sonde
-- Silicone fluide transparent
-- Filament d'impression 3D pour le support et le boîtier
+Charging resistor `R6 = 1 MΩ`, 2 × 10 kΩ reference divider, hysteresis thresholds set by R7/R8 (see the KiCad schematic).
 
-## Limites connues
+## Known limitations
 
-- La sonde ne distingue pas le sucre de l'alcool : un liquide sucré est lu comme plus alcoolisé qu'il ne l'est. La mesure est donc indicative en cours de fermentation.
-- Sensibilité réduite au delà de 30 %vol (la permittivité varie plus lentement avec le titre).
-- La mesure dépend de la température du liquide (pas de compensation thermique) : mesurer sur un liquide à l'équilibre.
-- Un bruit résiduel subsiste sur la mesure, d'où le choix d'un affichage par plages plutôt que d'une valeur précise.
+- **Sugar / alcohol ambiguity.** A water-sugar mixture has a permittivity close to a water-ethanol one, so the probe cannot tell them apart. Mid-fermentation, where sugar is progressively converted into alcohol, the reading is indicative rather than absolute. This is the most fundamental limitation of the approach.
+- **Sensitivity compressed by the insulation**, by a factor of ≈ 8.5 relative to simulation (see the dedicated section).
+- **Degraded resolution above 30 %vol**, where mixture permittivity varies more slowly with alcohol content.
+- **No temperature compensation.** Water permittivity is temperature-dependent: measure on a liquid at equilibrium, never in a transient.
+- **Residual noise** on the frequency measurement, which is what motivates the banded display over a precise figure. The screen does show a %vol value, used mostly for debugging.
+- **Sensitivity to immersion quality.** Trapped bubbles and partial immersion corrupt the reading. Submerge fully, clear the bubbles, and dry the gap carefully between measurements.
 
-## Améliorations possibles
+## Possible improvements
 
-- Compteur de bulles de CO2 sur le barboteur, pour lever l'ambiguïté entre sucre et alcool en fermentation.
-- Connectivité Bluetooth et historique des mesures sur smartphone.
-- Boîtier étanche.
-- Mesure en plusieurs points le long d’une sonde plus longue, pour vérifier l’homogénéité d’une cuve de fermentation.
-- Filtrage logiciel du signal pour réduire le bruit.
+- **CO₂ bubble counter** on the fermentation vessel's airlock, using an infrared LED and phototransistor. That independent measurement would resolve the sugar/alcohol ambiguity, which is the prototype's real weakness.
+- **Model the silicone coating** in COMSOL, or thin it down, to recover the lost sensitivity.
+- **Temperature compensation** via a temperature sensor and correction of the `εr(T)` law.
+- **Software filtering** of the measured frequency (moving average or median) to cut noise and sharpen band detection.
+- **Bluetooth connectivity** and measurement history on a phone, to plot the fermentation curve.
+- **IP67 enclosure** and a multi-point probe along a longer handle, to check homogeneity across a fermentation vessel.
 
-## Licence
+## Authors and supervision
 
-licence MIT
+Built by **Mathieu Abou Zeid** and **Gabriel Chatelain**, first-year ISMIN engineering students (EI25 cohort), École nationale supérieure des Mines de Saint-Étienne.
 
-## Avertissement
+Supervised by François Bernier, Roger Delattre and Sylvain Blayac. Fabrication at the ID-Fab prototyping workshop (LPKF milling and 3D printing).
 
-ALCOSONDE est un prototype pédagogique. Il fournit une mesure indicative et n'est pas un instrument certifié. Il ne doit pas servir à évaluer l'aptitude à conduire ni à prendre une décision liée à la consommation d'alcool.
+*Disclosure on AI use: AI tools assisted with report formatting, proofreading, discussion of some design choices, and firmware debugging. The design of the device, its fabrication, the measurements, the simulations, the calibration and the interpretation of results are our own work.*
+
+## References
+
+1. G. Åkerlöf, *Dielectric constants of some organic solvent-water mixtures at various temperatures*, Journal of the American Chemical Society, vol. 54, no. 11, pp. 4125–4139, 1932. [doi:10.1021/ja01350a001](https://doi.org/10.1021/ja01350a001)
+2. Analog Devices, *ADA4622-1/-2/-4: 30 V, 8 MHz, Low Bias Current, Single-Supply, RRO, Precision Op Amps*, Rev. F, 2015. [Datasheet](https://www.analog.com/en/products/ada4622-4.html)
+3. ILITEK, *ILI9341: a-Si TFT LCD Single Chip Driver (240×320, 262k colors)*, v1.11. [Datasheet](https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf)
+4. STMicroelectronics, *UM1956 — STM32 Nucleo-32 boards (MB1180)*, Rev. 5, 2018. [User manual](https://www.st.com/resource/en/user_manual/um1956-stm32-nucleo32-boards-mb1180-stmicroelectronics.pdf)
+5. COMSOL AB, *AC/DC Module User's Guide* and *COMSOL Multiphysics Reference Manual*, v6.2, 2024.
+6. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [GitHub repository](https://github.com/afiskon/stm32-ili9341)
+
+## License and disclaimer
+
+Code and documentation released under the [MIT license](LICENSE).
+
+> **Disclaimer.** ALCOSONDE is an educational prototype. It gives an indicative reading and is not a certified instrument. It must never be used to assess fitness to drive or to inform any decision related to alcohol consumption.
