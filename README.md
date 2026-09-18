@@ -269,18 +269,6 @@ git clone https://github.com/maaabz/Alcosonde.git
 
 > **Recalibrer après tout changement mécanique** de la sonde : collage des électrodes, réapplication du silicone, remplacement d'un câble. La géométrie et le revêtement fixent la pente, et ils bougent.
 
-### Structure du dépôt
-
-```
-alcosonde/
-├── firmware/             # Projet STM32CubeIDE (main.c, configuration CubeMX)
-├── hardware/
-│   ├── front-end/        # Schéma et routage KiCad du conditionneur
-│   └── probe/            # Modèles Fusion 360 du support et du boîtier
-├── simulation/           # Modèle COMSOL 6.2 et résultats du balayage
-├── docs/                 # Rapport PDF et figures
-└── README.md
-```
 
 ### Nomenclature
 
