@@ -574,18 +574,6 @@ git clone https://github.com/maaabz/Alcosonde.git
 
 > **Recalibrate after any mechanical change** to the probe: re-gluing the electrodes, reapplying silicone, replacing a cable. Geometry and coating set the slope, and both move.
 
-### Repository layout
-
-```
-alcosonde/
-├── firmware/             # STM32CubeIDE project (main.c, CubeMX configuration)
-├── hardware/
-│   ├── front-end/        # KiCad schematic and layout for the conditioning board
-│   └── probe/            # Fusion 360 models of the probe holder and enclosure
-├── simulation/           # COMSOL 6.2 model and sweep results
-├── docs/                 # PDF report and figures
-└── README.md
-```
 
 ### Bill of materials
 
