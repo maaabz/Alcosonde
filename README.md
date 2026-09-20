@@ -107,6 +107,9 @@ En croisant avec les données d'Åkerlöf, la simulation prédit 92,3 pF à 0 %v
 
 ### Circuit conditionneur
 
+<img width="1414" height="872" alt="image" src="https://github.com/user-attachments/assets/167d88c0-4659-4028-81d9-15ad3bbb7de7" />
+
+
 Le conditionneur convertit la capacité en fréquence par un **oscillateur à relaxation** construit autour d'un AOP quadruple **ADA4622-4** [2], en trois étages :
 
 1. **Référence de demi-alimentation** — diviseur résistif symétrique (2 × 10 kΩ) bouclé sur un suiveur, qui fixe le point milieu du montage en alimentation simple 5 V. Mesuré à 2,51 V pour 2,5 V théoriques.
@@ -412,6 +415,9 @@ The most instructive result is that **the deviation from the ideal parallel-plat
 Cross-referencing Åkerlöf's data, the simulation predicts 92.3 pF at 0 %vol and 57.3 pF at 40 %vol, i.e. 0.88 pF/%vol, and frequencies from 4.9 to 7.9 kHz. Comfortably within input-capture territory, so feasibility was confirmed.
 
 ### Analog front-end
+
+<img width="1414" height="872" alt="image" src="https://github.com/user-attachments/assets/3f43c55a-c23a-41f9-944e-36b74363b592" />
+
 
 The front-end converts capacitance to frequency with a **relaxation oscillator** built around an **ADA4622-4** quad op-amp [2], in three stages:
 
