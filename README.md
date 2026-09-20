@@ -313,8 +313,7 @@ Résistance de charge `R6 = 1 MΩ`, diviseur de référence 2 × 10 kΩ, seuils 
 2. Analog Devices, *ADA4622-1/-2/-4 : 30 V, 8 MHz, Low Bias Current, Single-Supply, RRO, Precision Op Amps*, Rev. F, 2015. [Fiche technique](https://www.analog.com/en/products/ada4622-4.html)
 3. ILITEK, *ILI9341 : a-Si TFT LCD Single Chip Driver (240×320, 262k couleurs)*, v1.11. [Fiche technique](https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf)
 4. STMicroelectronics, *UM1956 — STM32 Nucleo-32 boards (MB1180)*, Rev. 5, 2018. [Manuel](https://www.st.com/resource/en/user_manual/um1956-stm32-nucleo32-boards-mb1180-stmicroelectronics.pdf)
-5. COMSOL AB, *AC/DC Module User's Guide* et *COMSOL Multiphysics Reference Manual*, v6.2, 2024.
-6. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [Dépôt GitHub](https://github.com/afiskon/stm32-ili9341)
+5. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [Dépôt GitHub](https://github.com/afiskon/stm32-ili9341)
 
 ### Licence et avertissement
 
@@ -633,8 +632,7 @@ Charging resistor `R6 = 1 MΩ`, 2 × 10 kΩ reference divider, hysteresis thresh
 2. Analog Devices, *ADA4622-1/-2/-4: 30 V, 8 MHz, Low Bias Current, Single-Supply, RRO, Precision Op Amps*, Rev. F, 2015. [Datasheet](https://www.analog.com/en/products/ada4622-4.html)
 3. ILITEK, *ILI9341: a-Si TFT LCD Single Chip Driver (240×320, 262k colors)*, v1.11. [Datasheet](https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf)
 4. STMicroelectronics, *UM1956 — STM32 Nucleo-32 boards (MB1180)*, Rev. 5, 2018. [User manual](https://www.st.com/resource/en/user_manual/um1956-stm32-nucleo32-boards-mb1180-stmicroelectronics.pdf)
-5. COMSOL AB, *AC/DC Module User's Guide* and *COMSOL Multiphysics Reference Manual*, v6.2, 2024.
-6. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [GitHub repository](https://github.com/afiskon/stm32-ili9341)
+5. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [GitHub repository](https://github.com/afiskon/stm32-ili9341)
 
 ### License and disclaimer
 
