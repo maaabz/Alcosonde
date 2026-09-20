@@ -317,7 +317,6 @@ Résistance de charge `R6 = 1 MΩ`, diviseur de référence 2 × 10 kΩ, seuils 
 
 Code et documentation sous [licence MIT](LICENSE).
 
-> **Avertissement.** ALCOSONDE est un prototype pédagogique. Il fournit une mesure indicative et n'est pas un instrument certifié. Il ne doit en aucun cas servir à évaluer l'aptitude à conduire ni à prendre une décision liée à la consommation d'alcool.
 
 <a id="english"></a>
 
@@ -634,4 +633,3 @@ Charging resistor `R6 = 1 MΩ`, 2 × 10 kΩ reference divider, hysteresis thresh
 
 Code and documentation released under the [MIT license](LICENSE).
 
-> **Disclaimer.** ALCOSONDE is an educational prototype. It gives an indicative reading and is not a certified instrument. It must never be used to assess fitness to drive or to inform any decision related to alcohol consumption.
