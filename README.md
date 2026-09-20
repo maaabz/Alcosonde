@@ -53,7 +53,6 @@ ALCOSONDE mesure le titre alcoométrique d'un liquide (0 à 40 %vol) en exploita
 - [Nomenclature](#nomenclature)
 - [Limites connues](#limites-connues)
 - [Améliorations possibles](#améliorations-possibles)
-- [Auteurs et encadrement](#auteurs-et-encadrement)
 - [Références](#références)
 - [Licence et avertissement](#licence-et-avertissement)
 
@@ -361,7 +360,6 @@ ALCOSONDE measures the alcohol content of a liquid (0 to 40 %vol) by exploiting 
 - [Bill of materials](#bill-of-materials)
 - [Known limitations](#known-limitations)
 - [Possible improvements](#possible-improvements)
-- [Authors and supervision](#authors-and-supervision)
 - [References](#references)
 - [License and disclaimer](#license-and-disclaimer)
 
