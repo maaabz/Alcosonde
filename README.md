@@ -24,8 +24,6 @@
 
 ALCOSONDE mesure le titre alcoométrique d'un liquide (0 à 40 %vol) en exploitant le contraste de permittivité diélectrique entre l'eau (εr ≈ 80) et l'éthanol (εr ≈ 25). Contrairement à la densimétrie, elle reste plongée dans le liquide et suit son évolution en continu, ce qui la destine au suivi d'une fermentation maison (bière, vin, cidre, hydromel) jusqu'au degré visé.
 
-Projet du module *Projet Prototypage*, cursus ISMIN 1<sup>re</sup> année, École nationale supérieure des Mines de Saint-Étienne (2025–2026). Chaîne complète réalisée de bout en bout : validation physique par éléments finis, conception du PCB analogique, gravure de la sonde, firmware embarqué, étalonnage et validation expérimentale.
-
 ### Résultats en bref
 
 | Grandeur | Valeur mesurée |
@@ -304,13 +302,7 @@ Résistance de charge `R6 = 1 MΩ`, diviseur de référence 2 × 10 kΩ, seuils 
 - **Connectivité Bluetooth** et historique des mesures sur smartphone, pour tracer la courbe de fermentation.
 - **Boîtier étanche IP67** et sonde multi-points le long d'un manche plus long, pour vérifier l'homogénéité d'une cuve.
 
-### Auteurs et encadrement
 
-Projet réalisé en binôme dans le cadre du cursus ISMIN 1<sup>re</sup> année (promo EI25), École nationale supérieure des Mines de Saint-Étienne. Ce dépôt est maintenu par **Mathieu Abou Zeid**.
-
-Encadrement : François Bernier, Roger Delattre et Sylvain Blayac. Fabrication à l'atelier de prototypage ID-Fab (gravure LPKF et impression 3D).
-
-*Transparence sur l'usage de l'IA : des outils d'IA ont servi d'assistance pour la mise en forme du rapport, la relecture, la discussion de certains choix de conception et le débogage du firmware. La conception du dispositif, sa réalisation, les mesures, les simulations, l'étalonnage et l'interprétation des résultats sont notre travail.*
 
 ### Références
 
@@ -337,7 +329,6 @@ Code et documentation sous [licence MIT](LICENSE).
 
 ALCOSONDE measures the alcohol content of a liquid (0 to 40 %vol) by exploiting the dielectric permittivity contrast between water (εr ≈ 80) and ethanol (εr ≈ 25). Unlike hydrometry, it stays submerged and tracks the liquid continuously, which makes it suited to following a home fermentation (beer, wine, cider, mead) until the target strength is reached.
 
-Built for the *Prototyping Project* module, first-year ISMIN program, École nationale supérieure des Mines de Saint-Étienne (2025–2026). The full chain was designed end to end: finite-element validation of the physics, analog front-end design, probe fabrication, embedded firmware, calibration and experimental validation.
 
 ### Results at a glance
 
@@ -629,13 +620,6 @@ Charging resistor `R6 = 1 MΩ`, 2 × 10 kΩ reference divider, hysteresis thresh
 - **Bluetooth connectivity** and measurement history on a phone, to plot the fermentation curve.
 - **IP67 enclosure** and a multi-point probe along a longer handle, to check homogeneity across a fermentation vessel.
 
-### Authors and supervision
-
-Two-person team project for the first-year ISMIN program (EI25 cohort), École nationale supérieure des Mines de Saint-Étienne. This repository is maintained by **Mathieu Abou Zeid**.
-
-Supervised by François Bernier, Roger Delattre and Sylvain Blayac. Fabrication at the ID-Fab prototyping workshop (LPKF milling and 3D printing).
-
-*Disclosure on AI use: AI tools assisted with report formatting, proofreading, discussion of some design choices, and firmware debugging. The design of the device, its fabrication, the measurements, the simulations, the calibration and the interpretation of results are our own work.*
 
 ### References
 
