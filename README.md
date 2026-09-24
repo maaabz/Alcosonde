@@ -53,7 +53,7 @@ ALCOSONDE mesure le titre alcoométrique d'un liquide (0 à 40 %vol) en exploita
 - [Limites connues](#limites-connues)
 - [Améliorations possibles](#améliorations-possibles)
 - [Références](#références)
-- [Licence et avertissement](#licence-et-avertissement)
+- [Licence](#licence)
 
 ### Principe physique
 
@@ -313,7 +313,7 @@ Résistance de charge `R6 = 1 MΩ`, diviseur de référence 2 × 10 kΩ, seuils 
 4. STMicroelectronics, *UM1956 — STM32 Nucleo-32 boards (MB1180)*, Rev. 5, 2018. [Manuel](https://www.st.com/resource/en/user_manual/um1956-stm32-nucleo32-boards-mb1180-stmicroelectronics.pdf)
 5. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [Dépôt GitHub](https://github.com/afiskon/stm32-ili9341)
 
-### Licence et avertissement
+### Licence
 
 Code et documentation sous [licence MIT](LICENSE).
 
@@ -358,7 +358,7 @@ ALCOSONDE measures the alcohol content of a liquid (0 to 40 %vol) by exploiting 
 - [Known limitations](#known-limitations)
 - [Possible improvements](#possible-improvements)
 - [References](#references)
-- [License and disclaimer](#license-and-disclaimer)
+- [License](#license)
 
 ### Physical principle
 
@@ -617,7 +617,7 @@ Charging resistor `R6 = 1 MΩ`, 2 × 10 kΩ reference divider, hysteresis thresh
 4. STMicroelectronics, *UM1956 — STM32 Nucleo-32 boards (MB1180)*, Rev. 5, 2018. [User manual](https://www.st.com/resource/en/user_manual/um1956-stm32-nucleo32-boards-mb1180-stmicroelectronics.pdf)
 5. afiskon, *stm32-ili9341 — STM32 HAL-based library for ILI9341 TFT modules*. [GitHub repository](https://github.com/afiskon/stm32-ili9341)
 
-### License and disclaimer
+### License  
 
 Code and documentation released under the [MIT license](LICENSE).
 
